@@ -1,0 +1,43 @@
+# Minimal Makefile for building OptiScaler DLL
+# This focuses on building what we can with available dependencies
+
+CC = x86_64-w64-mingw32-gcc
+CXX = x86_64-w64-mingw32-g++
+WINDRES = x86_64-w64-mingw32-windres
+TARGET = OptiScaler.dll
+
+# Compiler flags
+CXXFLAGS = -std=c++17 -O2 -DNDEBUG -D_WINDOWS -D_USRDLL -D_UNICODE -DUNICODE
+CXXFLAGS += -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=0x0601
+CXXFLAGS += -I/usr/x86_64-w64-mingw32/include
+CXXFLAGS += -I/usr/x86_64-w64-mingw32/include/c++/12.2.0
+CXXFLAGS += -I/usr/x86_64-w64-mingw32/include/c++/12.2.0/x86_64-w64-mingw32
+CXXFLAGS += -IOptiScaler
+CXXFLAGS += -Iexternal/streamline1
+CXXFLAGS += -Iexternal/freetype/freetype
+CXXFLAGS += -Iexternal/nvngx_dlss_sdk
+
+# Linker flags
+LDFLAGS = -shared -Wl,--subsystem,windows
+
+# Source files (only the ones we can build without missing dependencies)
+SOURCES = OptiScaler/dllmain.cpp
+SOURCES += OptiScaler/Config.cpp
+SOURCES += OptiScaler/Util.cpp
+
+# Object files
+OBJECTS = $(SOURCES:.cpp=.o)
+
+# Build target
+$(TARGET): $(OBJECTS)
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
+	@echo "Minimal OptiScaler DLL built: $@"
+
+# Compile source files
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJECTS) $(TARGET)
+
+.PHONY: clean

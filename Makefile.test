@@ -1,0 +1,22 @@
+# Simple test Makefile for cross-compiling a Windows DLL
+CC = x86_64-w64-mingw32-gcc
+CXX = x86_64-w64-mingw32-g++
+TARGET = test_dll.dll
+
+# Compiler flags
+CXXFLAGS = -std=c++17 -O2 -D_WINDOWS -D_USRDLL -D_UNICODE -DUNICODE
+CXXFLAGS += -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=0x0601
+CXXFLAGS += -I/usr/x86_64-w64-mingw32/include
+
+# Linker flags
+LDFLAGS = -shared -Wl,--subsystem,windows
+
+# Build the test DLL
+$(TARGET): test_dll.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+	@echo "Test DLL built successfully: $@"
+
+clean:
+	rm -f $(TARGET)
+
+.PHONY: clean
